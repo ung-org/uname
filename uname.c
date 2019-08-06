@@ -17,14 +17,12 @@
  *
  */
 
+#define _POSIX_C_SOURCE 2
 #include <stdio.h>
-#include <getopt.h>
 #include <sys/utsname.h>
+#include <unistd.h>
 
-const char *uname_desc = "return system name";
-const char *uname_inv = "uname [-amnrsv]";
-
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
 	int c;
 	int machine = 0;
@@ -35,7 +33,7 @@ int main(int argc, char **argv)
 	struct utsname uts;
 	int space = 0;
 
-	while ((c = getopt(argc, argv, ":amnrsv")) != -1) {
+	while ((c = getopt(argc, argv, "amnrsv")) != -1) {
 		switch (c) {
 		case 'a':
 			machine = 1;
@@ -44,44 +42,61 @@ int main(int argc, char **argv)
 			sysname = 1;
 			version = 1;
 			break;
+
 		case 'm':
 			machine = 1;
 			break;
+
 		case 'n':
 			nodename = 1;
 			break;
+
 		case 'r':
 			release = 1;
 			break;
+
 		case 's':
 			sysname = 1;
 			break;
+
 		case 'v':
 			version = 1;
 			break;
+
 		default:
 			return 1;
 		}
 	}
 
-	if (optind < argc)
+	if (optind < argc) {
 		return 1;
+	}
 
 	if (machine == 0 && nodename == 0 && release == 0 && version == 0)
 		sysname = 1;
 
 	uname(&uts);
 
-	if (sysname)
+	if (sysname) {
 		space = printf("%s", uts.sysname);
-	if (nodename)
+	}
+
+	if (nodename) {
 		space = printf("%s%s", space ? " " : "", uts.nodename);
-	if (release)
+	}
+
+	if (release) {
 		space = printf("%s%s", space ? " " : "", uts.release);
-	if (version)
+	}
+
+	if (version) {
 		space = printf("%s%s", space ? " " : "", uts.version);
-	if (machine)
+	}
+
+	if (machine) {
 		space = printf("%s%s", space ? " " : "", uts.machine);
+	}
+
 	printf("\n");
 
 	return 0;
