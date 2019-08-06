@@ -28,12 +28,31 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
+enum {
+	MACHINE = 1<<0,
+	NODENAME = 1<<1,
+	RELEASE = 1<<2,
+	SYSNAME = 1<<3,
+	VERSION = 1<<4
+};
+
+unsigned int print(unsigned int flags, unsigned int field, const char *name)
+{
+	if (flags & field) {
+		printf("%s", name);
+		flags = flags & ~field;
+		if (flags) {
+			putchar(' ');
+		}
+	}
+	return flags;
+}
+
 int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "");
 
-	enum { MACHINE = 1<<0, NODENAME = 1<<1, RELEASE = 1<<2, SYSNAME = 1<<3,
-		VERSION = 1<<4 } show = 0;
+	unsigned int show = 0;
 
 	int c;
 	while ((c = getopt(argc, argv, "amnrsv")) != -1) {
@@ -79,26 +98,11 @@ int main(int argc, char *argv[])
 	struct utsname uts;
 	uname(&uts);
 
-	int space = 0;
-	if (show & SYSNAME) {
-		space = printf("%s", uts.sysname);
-	}
-
-	if (show & NODENAME) {
-		space = printf("%s%s", space ? " " : "", uts.nodename);
-	}
-
-	if (show & RELEASE) {
-		space = printf("%s%s", space ? " " : "", uts.release);
-	}
-
-	if (show & VERSION) {
-		space = printf("%s%s", space ? " " : "", uts.version);
-	}
-
-	if (show & MACHINE) {
-		space = printf("%s%s", space ? " " : "", uts.machine);
-	}
+	show = print(show, SYSNAME, uts.sysname);
+	show = print(show, NODENAME, uts.nodename);
+	show = print(show, RELEASE, uts.release);
+	show = print(show, VERSION, uts.version);
+	show = print(show, MACHINE, uts.machine);
 
 	putchar('\n');
 
