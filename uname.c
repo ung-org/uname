@@ -29,43 +29,34 @@
 
 int main(int argc, char *argv[])
 {
-	int c;
-	int machine = 0;
-	int nodename = 0;
-	int release = 0;
-	int sysname = 0;
-	int version = 0;
-	struct utsname uts;
-	int space = 0;
+	enum { MACHINE = 1<<0, NODENAME = 1<<1, RELEASE = 1<<2, SYSNAME = 1<<3,
+		VERSION = 1<<4 } show = 0;
 
+	int c;
 	while ((c = getopt(argc, argv, "amnrsv")) != -1) {
 		switch (c) {
 		case 'a':
-			machine = 1;
-			nodename = 1;
-			release = 1;
-			sysname = 1;
-			version = 1;
+			show = MACHINE | NODENAME | RELEASE | SYSNAME | VERSION;
 			break;
 
 		case 'm':
-			machine = 1;
+			show |= MACHINE;
 			break;
 
 		case 'n':
-			nodename = 1;
+			show |= NODENAME;
 			break;
 
 		case 'r':
-			release = 1;
+			show |= RELEASE;
 			break;
 
 		case 's':
-			sysname = 1;
+			show |= SYSNAME;
 			break;
 
 		case 'v':
-			version = 1;
+			show |= VERSION;
 			break;
 
 		default:
@@ -74,35 +65,39 @@ int main(int argc, char *argv[])
 	}
 
 	if (optind < argc) {
+		fprintf(stderr, "uname: invalid operand %s\n", argv[optind]);
 		return 1;
 	}
 
-	if (machine == 0 && nodename == 0 && release == 0 && version == 0)
-		sysname = 1;
+	if (show == 0) {
+		show = SYSNAME;
+	}
 
+	struct utsname uts;
 	uname(&uts);
 
-	if (sysname) {
+	int space = 0;
+	if (show & SYSNAME) {
 		space = printf("%s", uts.sysname);
 	}
 
-	if (nodename) {
+	if (show & NODENAME) {
 		space = printf("%s%s", space ? " " : "", uts.nodename);
 	}
 
-	if (release) {
+	if (show & RELEASE) {
 		space = printf("%s%s", space ? " " : "", uts.release);
 	}
 
-	if (version) {
+	if (show & VERSION) {
 		space = printf("%s%s", space ? " " : "", uts.version);
 	}
 
-	if (machine) {
+	if (show & MACHINE) {
 		space = printf("%s%s", space ? " " : "", uts.machine);
 	}
 
-	printf("\n");
+	putchar('\n');
 
 	return 0;
 }
