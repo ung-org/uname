@@ -23,12 +23,15 @@
  */
 
 #define _POSIX_C_SOURCE 2
+#include <locale.h>
 #include <stdio.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 
 int main(int argc, char *argv[])
 {
+	setlocale(LC_ALL, "");
+
 	enum { MACHINE = 1<<0, NODENAME = 1<<1, RELEASE = 1<<2, SYSNAME = 1<<3,
 		VERSION = 1<<4 } show = 0;
 
