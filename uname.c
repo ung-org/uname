@@ -22,63 +22,67 @@
 #include <sys/utsname.h>
 
 const char *uname_desc = "return system name";
-const char *uname_inv  = "uname [-amnrsv]";
+const char *uname_inv = "uname [-amnrsv]";
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-  int c;
-  int machine = 0;
-  int nodename = 0;
-  int release = 0;
-  int sysname = 0;
-  int version = 0;
-  struct utsname uts;
-  int space = 0;
+	int c;
+	int machine = 0;
+	int nodename = 0;
+	int release = 0;
+	int sysname = 0;
+	int version = 0;
+	struct utsname uts;
+	int space = 0;
 
-  while ((c = getopt (argc, argv, ":amnrsv")) != -1) {
-    switch (c) {
-      case 'a':
-        machine = 1;
-        nodename = 1;
-        release = 1;
-        sysname = 1;
-        version = 1;
-        break;
-      case 'm':
-        machine = 1;
-        break;
-      case 'n':
-        nodename = 1;
-        break;
-      case 'r':
-        release = 1;
-        break;
-      case 's':
-        sysname = 1;
-        break;
-      case 'v':
-        version = 1;
-        break;
-      default:
-        return 1;
-    }
-  }
+	while ((c = getopt(argc, argv, ":amnrsv")) != -1) {
+		switch (c) {
+		case 'a':
+			machine = 1;
+			nodename = 1;
+			release = 1;
+			sysname = 1;
+			version = 1;
+			break;
+		case 'm':
+			machine = 1;
+			break;
+		case 'n':
+			nodename = 1;
+			break;
+		case 'r':
+			release = 1;
+			break;
+		case 's':
+			sysname = 1;
+			break;
+		case 'v':
+			version = 1;
+			break;
+		default:
+			return 1;
+		}
+	}
 
-  if (optind < argc)
-    return 1;
+	if (optind < argc)
+		return 1;
 
-  if (machine == 0 && nodename == 0 && release == 0 && version == 0)
-    sysname = 1;
+	if (machine == 0 && nodename == 0 && release == 0 && version == 0)
+		sysname = 1;
 
-  uname (&uts);
+	uname(&uts);
 
-  if (sysname) space = printf ("%s", uts.sysname);
-  if (nodename) space = printf ("%s%s", space ? " " : "", uts.nodename);
-  if (release) space = printf ("%s%s", space ? " " : "", uts.release);
-  if (version) space = printf ("%s%s", space ? " " : "", uts.version);
-  if (machine) space = printf ("%s%s", space ? " " : "", uts.machine);
-  printf ("\n");
+	if (sysname)
+		space = printf("%s", uts.sysname);
+	if (nodename)
+		space = printf("%s%s", space ? " " : "", uts.nodename);
+	if (release)
+		space = printf("%s%s", space ? " " : "", uts.release);
+	if (version)
+		space = printf("%s%s", space ? " " : "", uts.version);
+	if (machine)
+		space = printf("%s%s", space ? " " : "", uts.machine);
+	printf("\n");
 
-  return 0;
+	return 0;
 }
